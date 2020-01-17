@@ -95,6 +95,23 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     return false;
   }
 
+  public upMultiSelection(): boolean {
+    // Find index of the current selection or the first node selected for multiple
+    // Select index -1 if it isn't the root
+    const nodes = this.dataSource.data;
+    const lastIndex = _.indexOf(nodes, this._lastSelection);
+    if (lastIndex > 0) {
+      const nodeToSelect = this.selectNextOpen(lastIndex, index => index - 1);
+      if (this.isSelected(nodeToSelect)) {
+        this.deselectNode(nodes[lastIndex], nodeToSelect);
+      } else {
+        this.selectNode(nodeToSelect);
+      }
+      return true;
+    }
+    return false;
+  }
+
   public downSelection(): boolean {
     // Find index of the current selection or the first node selected for multiple
     // Select index -1 if it isn't the root
@@ -102,6 +119,23 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     const lastIndex = _.indexOf(nodes, this._lastSelection);
     if (lastIndex < nodes.length - 1) {
       this.selectOne(this.selectNextOpen(lastIndex, index => index + 1));
+      return true;
+    }
+    return false;
+  }
+
+  public downMultiSelection(): boolean {
+    // Find index of the current selection or the first node selected for multiple
+    // Select index -1 if it isn't the root
+    const nodes = this.dataSource.data;
+    const lastIndex = _.indexOf(nodes, this._lastSelection);
+    if (lastIndex < nodes.length - 1) {
+      const nextNode = this.selectNextOpen(lastIndex, index => index + 1);
+      if (this.isSelected(nextNode)) {
+        this.deselectNode(nodes[lastIndex], nextNode);
+      } else {
+        this.selectNode(nextNode);
+      }
       return true;
     }
     return false;
@@ -128,10 +162,19 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     return !!node && _.findIndex(this._selection.selected, current => current.path === node.path) !== -1;
   }
 
-  public selectOne(node: StorageNode) {
-    this._selection.clear();
+  public selectNode(node: StorageNode) {
     this._selection.select(node);
     this._lastSelection = node;
+  }
+
+  public deselectNode(node: StorageNode, nextNode: StorageNode) {
+    this._selection.deselect(node);
+    this._lastSelection = nextNode;
+  }
+
+  public selectOne(node: StorageNode) {
+    this._selection.clear();
+    this.selectNode(node);
     let parent = this.dataSource.parentNode(node);
     while (parent.path !== this.rootNode.path) {
       this.expand(parent);
