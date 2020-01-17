@@ -19,6 +19,7 @@ import {HelpPageId} from 'projects/help/src/lib/help-panel/help-page-id';
 import {KeyBinding, KeyBindingsService} from 'projects/tools/src/lib/key-bindings.service';
 import {Subscription} from 'rxjs';
 import {KeyBoundMenuItem} from 'projects/storage/src/lib/storage-menu/menu-items/key-bound-menu-item';
+import {StorageKeyBindingService} from 'projects/storage/src/lib/storage-tree/storage-key-binding.service';
 
 library.add(
   faEllipsisV,
@@ -37,10 +38,11 @@ export const STORAGE_TREE_LABEL = new InjectionToken<string>('StorageTreeLabel')
     StorageListService,
     StorageTreeDataSourceService,
     StorageTreeControlService,
+    StorageKeyBindingService,
     CopyPasteService,
   ]
 })
-export class StorageTreeComponent implements OnInit, OnDestroy {
+export class StorageTreeComponent implements OnInit {
 
   // Icons
   readonly menuIcon = new IconFa(faEllipsisV, 'primary');
@@ -51,7 +53,6 @@ export class StorageTreeComponent implements OnInit, OnDestroy {
 
   public contextualMenu: ComponentPortal<any>;
   public label: string;
-  private keyBindings: KeyBinding[] = [];
 
   constructor(public treeControl: StorageTreeControlService,
               public dataSource: StorageTreeDataSourceService,
@@ -60,26 +61,14 @@ export class StorageTreeComponent implements OnInit, OnDestroy {
               @Inject(STORAGE_TREE_LABEL) @Optional() label: string,
               @Inject(STORAGE_ID) public id: string,
               private eventBus: EventBusService,
-              private keys: KeyBindingsService) {
+              private keyBindingService: StorageKeyBindingService) {
     dataSource.treeControl = treeControl;
     this.contextualMenu = new ComponentPortal<any>(contextualMenuType ? contextualMenuType : StorageContextualMenuComponent);
     this.label = label ? label : 'Files';
-    // TODO modifier le keybinding pour qu'il prenne une liste de String pour supporter IE ArrowUp / Up ...
-    this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.treeControl.upSelection.bind(this.treeControl), id));
-    this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.treeControl.downSelection.bind(this.treeControl), id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.treeControl.upMultiSelection.bind(this.treeControl), id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.treeControl.downMultiSelection.bind(this.treeControl), id));
   }
 
   ngOnInit() {
     this.dataSource.init();
-    this.keyBindings.forEach(binding => {
-      this.keys.add([binding]);
-    });
-  }
-
-  ngOnDestroy() {
-    this.keyBindings.forEach(binding => this.keys.remove([binding]));
   }
 
   selectHelpPage() {
