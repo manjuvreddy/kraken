@@ -1,4 +1,4 @@
-import {Inject, Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {KeyBinding, KeyBindingsService} from 'projects/tools/src/lib/key-bindings.service';
 import {STORAGE_ID} from 'projects/storage/src/lib/storage-id';
 import {StorageTreeControlService} from 'projects/storage/src/lib/storage-tree/storage-tree-control.service';
@@ -20,7 +20,6 @@ export class StorageKeyBindingService implements OnDestroy {
     @Inject(STORAGE_ROOT_NODE) private readonly rootNode: StorageNode,
     private keys: KeyBindingsService,
     private dataSource: StorageTreeDataSourceService) {
-    console.log("Service key binding ! " + this.id);
     this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.upSelection.bind(this), id));
     this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.downSelection.bind(this), id));
     this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.upMultiSelection.bind(this), id));
@@ -34,11 +33,9 @@ export class StorageKeyBindingService implements OnDestroy {
     this.keyBindings.forEach(binding => this.keys.remove([binding]));
   }
 
-
   public upSelection(): boolean {
     // Find index of the current selection or the first node selected for multiple
     // Select index -1 if it isn't the root
-    console.log("upselection");
     const nodes = this.dataSource.data;
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex > 0) {

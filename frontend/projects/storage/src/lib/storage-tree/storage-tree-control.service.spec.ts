@@ -40,10 +40,13 @@ export const storageTreeControlServiceSpy = () => {
     'isSelected',
     'isExpanded',
     'selectOne',
+    'selectNode',
+    'deselectNode',
     'loadExpansion',
     'ngOnDestroy',
   ]);
   spy.expansionModel = new SelectionModel<StorageNode>();
+  spy._selection = new SelectionModel<StorageNode>();
   return spy;
 };
 
