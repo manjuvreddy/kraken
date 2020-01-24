@@ -41,6 +41,7 @@ describe('StorageKeyBindingService', () => {
     keys = TestBed.get(KeyBindingsService);
     treeControl = TestBed.get(StorageTreeControlService);
     service = TestBed.get(StorageKeyBindingService);
+    service.init();
   });
 
   afterEach(() => {

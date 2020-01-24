@@ -14,16 +14,20 @@ export class StorageKeyBindingService implements OnDestroy {
 
   private keyBindings: KeyBinding[] = [];
 
+
   constructor(
     public treeControl: StorageTreeControlService,
     @Inject(STORAGE_ID) public id: string,
     @Inject(STORAGE_ROOT_NODE) private readonly rootNode: StorageNode,
     private keys: KeyBindingsService,
     private dataSource: StorageTreeDataSourceService) {
-    this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.upSelection.bind(this), id));
-    this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.downSelection.bind(this), id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.upMultiSelection.bind(this), id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), id));
+  }
+
+  public init(): void {
+    this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.upSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.downSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.upMultiSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), this.id));
     this.keyBindings.forEach(binding => {
       this.keys.add([binding]);
     });

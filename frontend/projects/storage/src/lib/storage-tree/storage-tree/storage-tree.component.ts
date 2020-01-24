@@ -60,10 +60,12 @@ export class StorageTreeComponent implements OnInit {
               @Inject(STORAGE_CONTEXTUAL_MENU) @Optional() contextualMenuType: any /*ComponentType<any>*/,
               @Inject(STORAGE_TREE_LABEL) @Optional() label: string,
               @Inject(STORAGE_ID) public id: string,
-              private eventBus: EventBusService) {
+              private eventBus: EventBusService,
+              keyBinding: StorageKeyBindingService) {
     dataSource.treeControl = treeControl;
     this.contextualMenu = new ComponentPortal<any>(contextualMenuType ? contextualMenuType : StorageContextualMenuComponent);
     this.label = label ? label : 'Files';
+    keyBinding.init();
   }
 
   ngOnInit() {
