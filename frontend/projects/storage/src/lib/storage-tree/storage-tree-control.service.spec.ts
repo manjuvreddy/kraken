@@ -33,6 +33,7 @@ import {storageListServiceSpy} from 'projects/storage/src/lib/storage-list.servi
 export const storageTreeControlServiceSpy = () => {
   const spy = jasmine.createSpyObj('StorageTreeControlService', [
     'nodeClick',
+    'mouseNodeDoubleClick',
     'nodeDoubleClick',
     'nodeContextMenu',
     'clearSelection',
@@ -156,7 +157,7 @@ describe('StorageTreeControlService', () => {
     const node = fileNode;
     const event = eventSpy();
     selection.isSelected.and.returnValue(true);
-    service.nodeDoubleClick(event, node);
+    service.mouseNodeDoubleClick(event, node);
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(eventBus.publish).toHaveBeenCalledWith(new OpenNodeEvent(node));
   });
@@ -166,7 +167,7 @@ describe('StorageTreeControlService', () => {
     const event = eventSpy();
     spyOn(service, 'toggle');
     selection.isSelected.and.returnValue(true);
-    service.nodeDoubleClick(event, node);
+    service.mouseNodeDoubleClick(event, node);
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(service.toggle).toHaveBeenCalledWith(node);
   });

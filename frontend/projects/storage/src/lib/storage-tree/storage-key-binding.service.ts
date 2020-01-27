@@ -27,7 +27,7 @@ export class StorageKeyBindingService implements OnDestroy {
     this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.upSelection.bind(this), this.id));
     this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.downSelection.bind(this), this.id));
     this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.upMultiSelection.bind(this), this.id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), this.id));this.keyBindings.push(new KeyBinding(['Enter'], this.openSelection.bind(this), id));
     this.keyBindings.forEach(binding => {
       this.keys.add([binding]);
     });
@@ -38,8 +38,6 @@ export class StorageKeyBindingService implements OnDestroy {
   }
 
   public upSelection(): boolean {
-    // Find index of the current selection or the first node selected for multiple
-    // Select index -1 if it isn't the root
     const nodes = this.dataSource.data;
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex > 0) {
@@ -51,8 +49,6 @@ export class StorageKeyBindingService implements OnDestroy {
   }
 
   public upMultiSelection(): boolean {
-    // Find index of the current selection or the first node selected for multiple
-    // Select index -1 if it isn't the root
     const nodes = this.dataSource.data;
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex > 0) {
@@ -68,8 +64,6 @@ export class StorageKeyBindingService implements OnDestroy {
   }
 
   public downSelection(): boolean {
-    // Find index of the current selection or the first node selected for multiple
-    // Select index -1 if it isn't the root
     const nodes = this.dataSource.data;
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex < nodes.length - 1) {
@@ -80,8 +74,6 @@ export class StorageKeyBindingService implements OnDestroy {
   }
 
   public downMultiSelection(): boolean {
-    // Find index of the current selection or the first node selected for multiple
-    // Select index -1 if it isn't the root
     const nodes = this.dataSource.data;
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex < nodes.length - 1) {
@@ -108,4 +100,11 @@ export class StorageKeyBindingService implements OnDestroy {
     return nodeToSelect;
   }
 
+  public openSelection(): boolean {
+    console.log('oopenSelection 0');
+    this.treeControl.selected.forEach(selectedNode => {
+      this.treeControl.nodeDoubleClick(selectedNode);
+    });
+    return true;
+  }
 }

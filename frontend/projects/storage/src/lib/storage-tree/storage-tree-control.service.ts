@@ -55,8 +55,11 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     this._toggleSelection($event, node);
   }
 
-  public nodeDoubleClick($event: MouseEvent, node: StorageNode) {
+  public mouseNodeDoubleClick($event: MouseEvent, node: StorageNode) {
     $event.stopPropagation();
+    this.nodeDoubleClick(node);
+  }
+  public nodeDoubleClick( node: StorageNode) {
     if (node.type === 'DIRECTORY') {
       this.toggle(node);
     } else {
