@@ -14,6 +14,15 @@ import {storageTreeDataSourceServiceSpy} from 'projects/storage/src/lib/storage-
 import {testStorageRootNode} from 'projects/storage/src/lib/entities/storage-node.spec';
 import {keyBindingsServiceSpy} from 'projects/tools/src/lib/key-bindings.service.spec';
 import SpyObj = jasmine.SpyObj;
+import any = jasmine.any;
+
+export const storageKeyBindingServiceSpy = () => {
+  const spy = jasmine.createSpyObj('StorageKeyBindingService', [
+    'init',
+    'upSelection'
+  ]);
+  return spy;
+};
 
 describe('StorageKeyBindingService', () => {
 
@@ -134,7 +143,7 @@ describe('StorageKeyBindingService', () => {
       treeControl.isSelected.withArgs(dataSource.data[6]).and.returnValue(true);
       expect(service.upMultiSelection()).toBe(true);
       expect(treeControl.deselectNode).toHaveBeenCalledTimes(1);
-      expect(treeControl.deselectNode.withArgs(dataSource.data[6], dataSource.data[7]));
+      expect(treeControl.deselectNode).toHaveBeenCalledWith(dataSource.data[7], dataSource.data[6]);
     });
   });
   it('should does not select up data', () => {
@@ -159,5 +168,79 @@ describe('StorageKeyBindingService', () => {
     treeControl._lastSelection = dataSource.data[dataSource.data.length - 1];
     expect(service.downMultiSelection()).toBe(false);
     expect(treeControl.selectOne).toHaveBeenCalledTimes(0);
+  });
+
+  it('should open data', () => {
+    (treeControl as any).selected = [dataSource.data[7]];
+    expect(service.openSelection()).toBe(true);
+    expect(treeControl.nodeDoubleClick).toHaveBeenCalledWith(dataSource.data[7]);
+  });
+
+  it('should open multi datas', () => {
+    (treeControl as any).selected = [dataSource.data[7], dataSource.data[8]];
+    expect(service.openSelection()).toBe(true);
+    expect(treeControl.nodeDoubleClick).toHaveBeenCalledTimes(2);
+    expect(treeControl.nodeDoubleClick).toHaveBeenCalledWith(dataSource.data[7]);
+    expect(treeControl.nodeDoubleClick).toHaveBeenCalledWith(dataSource.data[8]);
+  });
+
+  it('should right selection for directory', () => {
+    treeControl._lastSelection = dataSource.data[6];
+    const downSelection = spyOn(service, 'downSelection');
+    treeControl.isExpanded.withArgs(dataSource.data[6]).and.returnValue(true);
+    treeControl.isExpanded.withArgs(dataSource.data[5]).and.returnValue(true);
+    treeControl.isExpanded.withArgs(dataSource.data[4]).and.returnValue(true);
+    dataSource.parentNode.withArgs(dataSource.data[7]).and.returnValue(dataSource.data[6]);
+    service.rightSelection();
+    expect(downSelection).toHaveBeenCalledTimes(1);
+    expect(treeControl.expand).toHaveBeenCalledTimes(0);
+  });
+
+  it('should right selection for directory expanded', () => {
+    treeControl._lastSelection = dataSource.data[5];
+    treeControl.isExpanded.withArgs(dataSource.data[5]).and.returnValue(false);
+    expect(service.rightSelection()).toBe(true);
+    expect(treeControl.expand).toHaveBeenCalledTimes(1);
+    expect(treeControl.expand).toHaveBeenCalledWith(dataSource.data[5]);
+  });
+
+  it('should right selection for file', () => {
+    treeControl._lastSelection = dataSource.data[7];
+    const downSelection = spyOn(service, 'downSelection');
+    treeControl.isExpanded.withArgs(dataSource.data[6]).and.returnValue(true);
+    treeControl.isExpanded.withArgs(dataSource.data[7]).and.returnValue(true);
+    treeControl.isExpanded.withArgs(dataSource.data[8]).and.returnValue(true);
+    dataSource.parentNode.withArgs(dataSource.data[8]).and.returnValue(dataSource.data[6]);
+    service.rightSelection();
+    expect(downSelection).toHaveBeenCalledTimes(1);
+    expect(treeControl.expand).toHaveBeenCalledTimes(0);
+  });
+
+  it('should left selection for directory', () => {
+    treeControl._lastSelection = dataSource.data[5];
+    dataSource.parentNode.withArgs(dataSource.data[5]).and.returnValue(dataSource.data[4]);
+    treeControl.isExpanded.withArgs(dataSource.data[5]).and.returnValue(false);
+    expect(service.leftSelection()).toBe(true);
+    expect(treeControl.selectOne).toHaveBeenCalledTimes(1);
+    expect(treeControl.selectOne).toHaveBeenCalledWith(dataSource.data[4]);
+    expect(treeControl.collapse).toHaveBeenCalledTimes(0);
+  });
+
+  it('should left selection for directory expanded', () => {
+    treeControl._lastSelection = dataSource.data[6];
+    treeControl.isExpanded.withArgs(dataSource.data[6]).and.returnValue(true);
+    expect(service.leftSelection()).toBe(true);
+    expect(treeControl.collapse).toHaveBeenCalledTimes(1);
+    expect(treeControl.collapse).toHaveBeenCalledWith((dataSource.data[6]));
+    expect(treeControl.selectOne).toHaveBeenCalledTimes(0);
+  });
+
+  it('should left selection for file', () => {
+    treeControl._lastSelection = dataSource.data[7];
+    dataSource.parentNode.withArgs(dataSource.data[7]).and.returnValue(dataSource.data[6]);
+    expect(service.leftSelection()).toBe(true);
+    expect(treeControl.selectOne).toHaveBeenCalledTimes(1);
+    expect(treeControl.selectOne).toHaveBeenCalledWith(dataSource.data[6]);
+    expect(treeControl.collapse).toHaveBeenCalledTimes(0);
   });
 });

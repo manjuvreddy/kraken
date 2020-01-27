@@ -27,7 +27,10 @@ export class StorageKeyBindingService implements OnDestroy {
     this.keyBindings.push(new KeyBinding(['ArrowUp', 'Up'], this.upSelection.bind(this), this.id));
     this.keyBindings.push(new KeyBinding(['ArrowDown', 'Down'], this.downSelection.bind(this), this.id));
     this.keyBindings.push(new KeyBinding(['shift + ArrowUp', 'shift + Up'], this.upMultiSelection.bind(this), this.id));
-    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), this.id));this.keyBindings.push(new KeyBinding(['Enter'], this.openSelection.bind(this), id));
+    this.keyBindings.push(new KeyBinding(['shift + ArrowDown', 'shift + Down'], this.downMultiSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['Enter'], this.openSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['Right', 'ArrowRight'], this.rightSelection.bind(this), this.id));
+    this.keyBindings.push(new KeyBinding(['Left', 'ArrowLeft'], this.leftSelection.bind(this), this.id));
     this.keyBindings.forEach(binding => {
       this.keys.add([binding]);
     });
@@ -101,10 +104,30 @@ export class StorageKeyBindingService implements OnDestroy {
   }
 
   public openSelection(): boolean {
-    console.log('oopenSelection 0');
     this.treeControl.selected.forEach(selectedNode => {
       this.treeControl.nodeDoubleClick(selectedNode);
     });
+    return true;
+  }
+
+  public rightSelection(): boolean {
+    const node = this.treeControl._lastSelection;
+    if (node.type === 'DIRECTORY' && !this.treeControl.isExpanded(node)) {
+      this.treeControl.expand(node);
+    } else {
+      return this.downSelection();
+    }
+    return true;
+  }
+
+  public leftSelection(): boolean {
+    const node = this.treeControl._lastSelection;
+    if (node.type !== 'DIRECTORY' || (node.type === 'DIRECTORY' && !this.treeControl.isExpanded(node))) {
+      const parent = this.dataSource.parentNode(node);
+      this.treeControl.selectOne(parent);
+    } else {
+      this.treeControl.collapse(node);
+    }
     return true;
   }
 }

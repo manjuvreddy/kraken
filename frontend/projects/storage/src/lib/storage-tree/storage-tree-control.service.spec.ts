@@ -40,6 +40,8 @@ export const storageTreeControlServiceSpy = () => {
     'clearExpansion',
     'isSelected',
     'isExpanded',
+    'expand',
+    'collapse',
     'selectOne',
     'selectNode',
     'deselectNode',

@@ -59,7 +59,8 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     $event.stopPropagation();
     this.nodeDoubleClick(node);
   }
-  public nodeDoubleClick( node: StorageNode) {
+
+  public nodeDoubleClick(node: StorageNode) {
     if (node.type === 'DIRECTORY') {
       this.toggle(node);
     } else {
@@ -84,6 +85,7 @@ export class StorageTreeControlService extends FlatTreeControl<StorageNode> impl
     this._selection.clear();
     this._lastSelection = null;
   }
+
   public clearExpansion() {
     this.expansionModel.clear();
   }
