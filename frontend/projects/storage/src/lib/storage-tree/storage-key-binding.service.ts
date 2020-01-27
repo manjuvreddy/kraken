@@ -8,6 +8,7 @@ import {
   STORAGE_ROOT_NODE,
   StorageTreeDataSourceService
 } from 'projects/storage/src/lib/storage-tree/storage-tree-data-source.service';
+import {ScrollPositionComponent} from 'projects/storage/src/lib/storage-tree/scroll-position/scroll-position.component';
 
 @Injectable()
 export class StorageKeyBindingService implements OnDestroy {
@@ -20,7 +21,8 @@ export class StorageKeyBindingService implements OnDestroy {
     @Inject(STORAGE_ID) public id: string,
     @Inject(STORAGE_ROOT_NODE) private readonly rootNode: StorageNode,
     private keys: KeyBindingsService,
-    private dataSource: StorageTreeDataSourceService) {
+    private dataSource: StorageTreeDataSourceService,
+    private scrollPositionComponent: ScrollPositionComponent) {
   }
 
   public init(): void {
@@ -46,6 +48,7 @@ export class StorageKeyBindingService implements OnDestroy {
     if (lastIndex > 0) {
       const nodeToSelect = this.selectNextOpen(lastIndex, index => index - 1);
       this.treeControl.selectOne(nodeToSelect);
+      this.scrollPositionComponent.upScrollPosition();
       return true;
     }
     return false;
@@ -58,8 +61,10 @@ export class StorageKeyBindingService implements OnDestroy {
       const nodeToSelect = this.selectNextOpen(lastIndex, index => index - 1);
       if (this.treeControl.isSelected(nodeToSelect)) {
         this.treeControl.deselectNode(nodes[lastIndex], nodeToSelect);
+        this.scrollPositionComponent.upScrollPosition();
       } else {
         this.treeControl.selectNode(nodeToSelect);
+        this.scrollPositionComponent.upScrollPosition();
       }
       return true;
     }
@@ -71,6 +76,7 @@ export class StorageKeyBindingService implements OnDestroy {
     const lastIndex = _.indexOf(nodes, this.treeControl._lastSelection);
     if (lastIndex < nodes.length - 1) {
       this.treeControl.selectOne(this.selectNextOpen(lastIndex, index => index + 1));
+      this.scrollPositionComponent.downScrollPosition();
       return true;
     }
     return false;
@@ -83,8 +89,10 @@ export class StorageKeyBindingService implements OnDestroy {
       const nextNode = this.selectNextOpen(lastIndex, index => index + 1);
       if (this.treeControl.isSelected(nextNode)) {
         this.treeControl.deselectNode(nodes[lastIndex], nextNode);
+        this.scrollPositionComponent.downScrollPosition();
       } else {
         this.treeControl.selectNode(nextNode);
+        this.scrollPositionComponent.downScrollPosition();
       }
       return true;
     }

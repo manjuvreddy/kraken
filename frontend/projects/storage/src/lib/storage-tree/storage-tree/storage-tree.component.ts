@@ -1,4 +1,4 @@
-import {Component, Inject, InjectionToken, OnDestroy, OnInit, Optional} from '@angular/core';
+import {Component, ElementRef, Inject, InjectionToken, OnInit, Optional, ViewChild} from '@angular/core';
 import {IconFaAddon} from 'projects/icon/src/lib/icon-fa-addon';
 import {IconFa} from 'projects/icon/src/lib/icon-fa';
 import {faEllipsisV} from '@fortawesome/free-solid-svg-icons/faEllipsisV';
@@ -16,10 +16,8 @@ import {StorageListService} from 'projects/storage/src/lib/storage-list.service'
 import {EventBusService} from 'projects/event/src/lib/event-bus.service';
 import {SelectHelpEvent} from 'projects/help/src/lib/help-panel/select-help-event';
 import {HelpPageId} from 'projects/help/src/lib/help-panel/help-page-id';
-import {KeyBinding, KeyBindingsService} from 'projects/tools/src/lib/key-bindings.service';
-import {Subscription} from 'rxjs';
-import {KeyBoundMenuItem} from 'projects/storage/src/lib/storage-menu/menu-items/key-bound-menu-item';
 import {StorageKeyBindingService} from 'projects/storage/src/lib/storage-tree/storage-key-binding.service';
+import {ScrollPositionComponent} from 'projects/storage/src/lib/storage-tree/scroll-position/scroll-position.component';
 
 library.add(
   faEllipsisV,
@@ -40,6 +38,7 @@ export const STORAGE_TREE_LABEL = new InjectionToken<string>('StorageTreeLabel')
     StorageTreeControlService,
     StorageKeyBindingService,
     CopyPasteService,
+    ScrollPositionComponent,
   ]
 })
 export class StorageTreeComponent implements OnInit {
@@ -53,6 +52,8 @@ export class StorageTreeComponent implements OnInit {
 
   public contextualMenu: ComponentPortal<any>;
   public label: string;
+
+  @ViewChild('scrollableTree', {static: false}) scrollableTree: ElementRef;
 
   constructor(public treeControl: StorageTreeControlService,
               public dataSource: StorageTreeDataSourceService,
